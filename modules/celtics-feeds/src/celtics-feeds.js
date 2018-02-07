@@ -5,7 +5,7 @@ module.exports = (function() {
   } else {
     urlRoot = 'https://i.cdn.turner.com/nba/nba/.element/media/2.0/teamsites/celtics/json/';
   }
-  let feeds = {
+  const feeds = {
     mobile: {
       live: {
         todaysScores(year) {
@@ -19,7 +19,7 @@ module.exports = (function() {
         },
         gameDetail(gid, year) {
           return `http://data.nba.com/data/v2015/json/mobile_teams/nba/${year}/scores/gamedetail/${gid}_gamedetail.json`;
-        },
+        }
       },
       standings(year) {
         return `http://data.nba.com/data/v2015/json/mobile_teams/nba/${year}/00_standings.json`;
