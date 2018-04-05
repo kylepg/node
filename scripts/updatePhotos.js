@@ -11,12 +11,16 @@ THIS FUNCTION WILL
 
 4. IF THERE IS A GALLERY THAT HAS NOT BEEN REQUESTED PREVIOUSLY,
    REQUEST THAT NODE & LOOP THROUGH THE PHOTOS. IF A CURRENT
-   PLAYER IS IN THE CAPTION OF PHOTO, ADD TO PHOTO OBJECT.
+   PLAYER IS IN THE CAPTION OF PHOTO, ADD THE PHOTO DATA TO 
+   THAT PLAYER IN THE PHOTO OBJECT.
 
 ======================================================*/
+
+const fetch = require('node-fetch');
+const request = require('sync-request');
+
 let offset = 0;
 const rosterObj = [];
-const request = require('sync-request'); //WAS HAVING TROUBLE WITH ASYNCHRONOUS CALLS
 const Storage = require('node-storage');
 const fs = require('fs');
 const { exec } = require('child_process');
@@ -60,6 +64,7 @@ if (rosterRequest.statusCode !== 200) {
 }
 const player = rosterData.t.pl;
 let more = true;
+const newPhotos = {};
 for (let i = 0; i < player.length; i++) {
   rosterObj[i] = {
     fn: player[i].fn,
@@ -68,6 +73,7 @@ for (let i = 0; i < player.length; i++) {
   };
   if (!photoObj.hasOwnProperty(player[i].pid)) {
     photoObj[player[i].pid] = [];
+    newPhotos[player[i].pid] = [];
   }
 }
 while (more) {
@@ -94,8 +100,8 @@ while (more) {
     for (let p = 0; p < nodeData.content[0].images.length; p++) {
       for (let r = 0; r < rosterObj.length; r++) {
         if (nodeData.content[0].images[p].caption.indexOf(`${rosterObj[r].fn} ${rosterObj[r].ln}`) >= 0) {
-          photoObj[rosterObj[r].pid].push(nodeData.content[0].images[p]);
-          photoObj[rosterObj[r].pid][photoObj[rosterObj[r].pid].length - 1].date = nodeData.content[0].formatted.created;
+          newPhotos[rosterObj[r].pid].push(nodeData.content[0].images[p]);
+          newPhotos[rosterObj[r].pid][newPhotos[rosterObj[r].pid].length - 1].date = nodeData.content[0].formatted.created;
         }
       }
     }
@@ -109,6 +115,12 @@ while (more) {
   if (galleriesData.next !== undefined && more === true) {
     console.log('\x1b[32m', `\nThere's more: ${galleriesData.next}`);
   } else {
+    for (let r = 0; r < rosterObj.length; r++) {
+      for (let n = 0; n < newPhotos[rosterObj[r].pid].length; n++) {
+        newPhotos[newPhotosObj[r].pid].reverse();
+        photoObj[rosterObj[r].pid].unshift(newPhotos[rosterObj[r].pid][n]);
+      }
+    }
     console.log('\x1b[31m', '\nWriting file...\n');
     const pids = Object.keys(photoObj);
     for (let i = 0; i < Object.keys(photoObj).length; i++) {
