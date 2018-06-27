@@ -3,7 +3,7 @@ var request = require("request")
 var fs = require('fs');
 
 request({
-    url: 'http://data.nba.com/data/v2015/json/mobile_teams/nba/2017/teams/celtics/player_averages_02.json',
+    url: 'http://data.nba.com/data/v2015/json/mobile_teams/nba/2017/teams/celtics/player_averages_04.json',
     json: true
 }, function (error, response, body) {
 	var obj = JSON.stringify(body);

@@ -1,6 +1,6 @@
 'use strict';
 exports.update = function() {
-    //BOOOOM
+    // BOOOOM
     function myScript(thisObj) {
         function myScript_buildUI(thisObj) {
             var myPanel = (thisObj instanceof Panel) ? thisObj : new Window("palette", "My Panel Name", [0, 0, 300, 300]);
@@ -297,19 +297,19 @@ exports.update = function() {
             groupTopRight.alignment = ['fill', 'left'];
             groupTopRight.alignChildren = ['fill', 'fill'];
             var pg = groupTopRight.add("dropdownlist", undefined, playerArr, );
-            pg.selection = 3;
+            pg.selection = 9;
             pg.text = "PG:";
             var sg = groupTopRight.add("dropdownlist", undefined, playerArr);
-            sg.selection = 9;
+            sg.selection = 11;
             sg.text = "SG:";
             var sf = groupTopRight.add("dropdownlist", undefined, playerArr);
-            sf.selection = 12;
+            sf.selection = 14;
             sf.text = "SF:";
             var pf = groupTopRight.add("dropdownlist", undefined, playerArr);
-            pf.selection = 0;
+            pf.selection = 4;
             pf.text = "PF:";
             var c = groupTopRight.add("dropdownlist", undefined, playerArr);
-            c.selection = 5;
+            c.selection = 0;
             c.text = "C :";
             // Positions Dropdowns
             var groupTopRight = groupTop.add("group", undefined, "Position");
@@ -319,7 +319,7 @@ exports.update = function() {
             var pgPos = groupTopRight.add("dropdownlist", undefined, positionArr, );
             pgPos.selection = 0;
             var sgPos = groupTopRight.add("dropdownlist", undefined, positionArr);
-            sgPos.selection = 1;
+            sgPos.selection = 0;
             var sfPos = groupTopRight.add("dropdownlist", undefined, positionArr);
             sfPos.selection = 1;
             var pfPos = groupTopRight.add("dropdownlist", undefined, positionArr);
@@ -358,13 +358,7 @@ exports.update = function() {
             // Apply Button
             var applyBtn = wrap.add("button", undefined, 'APPLY');
             applyBtn.alignment = ['fill', 'fill'];
-            // HIDE LAYERS
-            /*      function changeOpacity() { // Why won't you work!?
-                      var pgHeadshot = app.project.item(1);
-                      for (var i=0; i <= pg.items.length; i++){
-                          pgHeadshot.layer(i).property("Opacity").setValue(0);
-                      }
-                  } */
+
             //////////////////////
             // SHOW/HIDE LAYERS //
             //////////////////////
@@ -745,15 +739,15 @@ exports.update = function() {
                 =================================*/
                 if (groupRight.socialMedia.home.value == true) {
                     // INSTA
-                    app.project.item(90).layer(48).enabled = true;
-                    app.project.item(90).layer(49).enabled = false;
+                    app.project.item(90).layer(53).enabled = true;
+                    app.project.item(90).layer(54).enabled = false;
                     // TWITTER
                     app.project.item(91).layer(43).enabled = true;
                     app.project.item(91).layer(44).enabled = false;
                 } else {
                     // INSTA
-                    app.project.item(90).layer(49).enabled = true;
-                    app.project.item(90).layer(48).enabled = false;
+                    app.project.item(90).layer(54).enabled = true;
+                    app.project.item(90).layer(53).enabled = false;
                     // TWITTER
                     app.project.item(91).layer(44).enabled = true;
                     app.project.item(91).layer(43).enabled = false;
