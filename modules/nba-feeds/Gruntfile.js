@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
@@ -8,7 +8,7 @@ module.exports = function(grunt) {
 
     watch: {
       js: {
-        files: ['src/celtics-feeds.js'],
+        files: ['src/nba-feeds.js'],
         tasks: ['babel', 'notify:done']
       }
     },
@@ -24,7 +24,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'index.js': 'src/celtics-feeds.js'
+          'index.js': 'src/nba-feeds.js'
         }
       }
     },
@@ -37,7 +37,7 @@ module.exports = function(grunt) {
       options: {
         enabled: true,
         max_jshint_notifications: 5,
-        title: 'concourse',
+        title: 'nba-feeds',
         success: false,
         duration: 1
       }
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
       done: {
         options: {
           gruntLogHeader: false,
-          title: 'Grunt - celtics-feeds',
+          title: 'Grunt - nba-feeds',
           message: 'DONE!'
         }
       }
