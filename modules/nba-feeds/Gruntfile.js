@@ -20,7 +20,8 @@ module.exports = function (grunt) {
     babel: {
       options: {
         sourceMap: false,
-        presets: ['env']
+        presets: ['env'],
+        plugins: ['transform-runtime']
       },
       dist: {
         files: {
