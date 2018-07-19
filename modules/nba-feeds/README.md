@@ -18,7 +18,7 @@ const nba = nbaFeeds('< content API access token goes here >');
 
 ### Mobile Stats
 
-
+Example:
 ```js
 // Return playoff bracket JSON
 const playoffBracket = await nba.stats.playoffBracket({ league: 'nba', seasonYear: '2017', leagueId: '00' });
@@ -54,13 +54,13 @@ gameDetail({league, seasonYear, gameId})
 ```
 This feed contains the full boxscore for a game. Updates occur in real time during live games.
 NOTE: Removed from this feed are the team season averages. This can now be found in a separate feed. The Last Meeting
-information has also been moved out of this feed and into the Team Schedule feed
+information has also been moved out of this feed and into the Team Schedule feed.
 ##### Standings
 ```js
 standings({league, seasonYear, leagueId})
 ```
 This feed is produced when standings are available for the given season for the designated league. Updated every time a
-game ends, or standings are changed. This feed is only generated for preseason and regular season
+game ends, or standings are changed. This feed is only generated for preseason and regular season.
 ##### Playoff Bracket
 ```js
 playoffBracket({league, seasonYear, leagueId})
@@ -89,7 +89,7 @@ daily.
 allTimeLeaders({league, seasonYear, leagueId, statType, seasonTypeId})
 ```
 The all-time leaders files are generate for various statistical categories and contain the career totals and per game leaders for
-the entire league history. A separate player card file is generated for each season type:
+the entire league history. A separate player card file is generated for each season type.
 
 ##### All Time Players
 ```js
@@ -103,7 +103,7 @@ whether the player is currently active.
 leagueLeaders({league, seasonYear, leagueId, statType, seasonTypeId})
 ```
 The league leaders files are generate for various statistical categories and contain the league totals and per game leaders for
-the season. A separate league leader file is generated for each season type:
+the season. A separate league leader file is generated for each season type.
 ##### Team Schedule
 ```js
 teamSchedule({league, seasonYear, teamName, seasonTypeId})
@@ -141,57 +141,73 @@ NBA draft when rosters are posted. All-star rosters are produced for east/west a
 ```js
 rollingDailySchedule({league, seasonYear, teamName})
 ```
-
+This feed updates when roster changes are produced, and overnight. It includes only active coaches. Coach feeds are
+available for regular all-star and rookie-sophomore teams based on team name.
 ##### Team Player Averages
 ```js
 teamPlayerAverages({league, seasonYear, teamName, seasonTypeId})
 ```
-
+This feed contains the players on a team in a given season type and has each player’s per game averages and totals for
+various stats. It is updated after every game night. A separate team season averages file is generated for each season type.
 ##### Team Statistics
 ```js
 teamStatistics({league, seasonYear, teamName, seasonTypeId})
 ```
-
+This feed is updated after every game night. All stats are per game for the team overall. A separate statistics file is generated
+for each season type.
 ##### Team Leaders Overall File
 ```js
 teamLeadersOverallFile({league, seasonYear, teamName, seasonTypeId})
 ```
-
+This feed shows team leaders in points, assists, rebounds, field goals, free throws, three pointers, blocks, steals and
+turnovers. It is updated after every game night. A separate team leaders overall file is generated for each season type.
 ##### Team Leaders Detail Stats
 ```js
 teamLeadersDetailStats({league, seasonYear, teamName, statType, seasonTypeId})
 ```
-
+This feed is updated after every game night. A separate file is generated for each stat and each season type.
 ##### Team Season Averages
 ```js
 teamSeasonAverages({league, seasonYear, teamName, seasonTypeId})
 ```
-
+This feed contains information that was formerly in the game detail feed. It is updated after every game night. A separate
+team season averages file is generated for each stat and each season type.
 ##### Advanced Team And Player Stats
 ```js
 advancedTeamAndPlayerStats({league, seasonYear, teamName, seasonTypeId})
 ```
-
-#####Player Cards
+This feed contains advanced team and player statistics in per 36 minute increments. There are no qualifiers for
+players on the values. Players can appear in more than one team’s file as the stats displayed are only those gained
+while on said team. There is a roster status attribute to ignore said players if desired.
+##### Player Cards
 ```js
 playerCards({league, seasonYear, playerId, seasonTypeId})
 ```
-
-#####Player Ranks
+The Player cards are available for preseason, regular season, and playoffs. Season Year has been added to the URL format,
+so that you can get player cards for previous seasons. Game logs are also included. A separate player card file is generated
+for each season type.
+##### Player Ranks
 ```js
 playerRanks({league, seasonYear, playerId, seasonTypeId})
 ```
-
-#####Player Splits
+The Player ranks files are available for preseason, regular season, and playoffs. It includes a player’s ranks and values for
+various statistical categories. It has ranks for totals, per game averages and per minute. The per minute stat values are per
+forty minutes for WNBA and per forty eight minutes for all others. A separate player card file is generated for each season
+type.
+##### Player Splits
 ```js
 playerSplits({league, seasonYear, playerId, seasonTypeId})
 ```
-
-#####Player Hights
+The Player splits are available for preseason, regular season, and playoffs. It includes breakdown of totals and per game
+averages for various statistical categories based on various split categories and the corresponding splits within. A separate
+player split file is generated for each season type.
+##### Player Hights
 ```js
 playerHighs({league, seasonYear, playerId, seasonTypeId})
 ```
-
+The Player highs files are available for preseason, regular season, and playoffs. It includes a player’s career and season
+highs in various statistical categories. If the value is non-zero, it contains a list of the games it occurred. A separate player
+highs file is generated for each season type.
 
 <!-- 
 
