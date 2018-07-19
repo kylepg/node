@@ -18,6 +18,36 @@ const nba = nbaFeeds('< content API access token goes here >');
 
 ### Mobile Stats
 
+#### Season Type ID
+* 01 – Preseason
+* 02 – Regular Season
+* 03 – All-star
+* 04 – Playoffs
+
+#### League ID
+* 00 – NBA
+* 10 – WNBA
+* 14 – NBA Orlando Summer League
+* 15 – NBA Las Vegas Summer League
+* 16 – NBA Utah Summer League (Rocky Mountain Revue)
+* 20 – NBA Developmental League 
+
+#### League Name
+* NBA (00): nba
+* WNBA (10): wnba
+* NBA Orlando Summer League (14): orlando
+* NBA Las Vegas Summer League (15): vegas
+* NBA Utah Summer League (Rocky Mountain Revue) (16): utah
+* NBA Developmental League (20): dleague
+
+
+#### Cache Control Values
+* 5s – five seconds
+* 10s – ten seconds
+* 30s – thirty seconds
+* 1m – one minute (sixty seconds)
+* 1h – one hour (3,600 seconds) 
+
 Example:
 ```js
 // Return playoff bracket JSON
