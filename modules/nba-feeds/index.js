@@ -4,6 +4,10 @@ var _getOwnPropertyNames = require('babel-runtime/core-js/object/get-own-propert
 
 var _getOwnPropertyNames2 = _interopRequireDefault(_getOwnPropertyNames);
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -20,6 +24,8 @@ var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 /* ================================
 =            NBA FEEDS            =
 ================================== */
+
+/* global Drupal */
 
 //
 // ─── IMPORTS ────────────────────────────────────────────────────────────────────
@@ -137,7 +143,8 @@ var fetchLeagueStats = function () {
 // ─── HELPERS ────────────────────────────────────────────────────────────────────
 //
 
-// Verify that the required arguments were provided in the function call (stats API)
+
+// Encode query items to valid URI format (content API)
 
 
 require('whatwg-fetch');
@@ -148,17 +155,6 @@ var _fetchJsonp2 = _interopRequireDefault(_fetchJsonp);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function checkArgs(provided, required) {
-  var msg = required.reduce(function (acc, val) {
-    if (provided[val] === undefined || provided[val] === null) {
-      return acc + ' ' + val;
-    }
-    return acc;
-  });
-  throw new Error('Missing arguments: ' + msg);
-}
-
-// Encode query items to valid URI format (content API)
 function encodeItems(items) {
   var output = [];
   items.forEach(function (item) {
@@ -185,167 +181,352 @@ function pathCreator(property, fallback, query) {
   return fallback;
 }
 
+// Generate a list of request arguments
+function defineOtherArgs(args) {
+  var leagues = {
+    '00': 'nba',
+    10: 'wnba',
+    14: 'orlando',
+    15: 'vegas',
+    16: 'utah',
+    20: 'dleague'
+  };
+  var seasonYear = function seasonYear() {
+    if (typeof args.seasonYear === 'undefined') {
+      if (typeof Drupal.settings.today.season_year === 'undefined' || seasonYear === null) {
+        var d = new Date();
+        var y = d.getFullYear();
+        var m = d.getMonth();
+        if (m < 6) {
+          y -= 1;
+        }
+        return y;
+      }
+      return Drupal.settings.today.season_year;
+    }
+    return args.seasonYear;
+  };
+
+  var seasonTypeId = function seasonTypeId() {
+    if (typeof args.seasonTypeId === 'undefined') {
+      var id = Drupal.settings.today.season_stage;
+      if (typeof id === 'undefined' || id === null) {
+        id = '2';
+      }
+      return '0' + id.toString();
+    }
+    return args.seasonTypeId;
+  };
+
+  var leagueId = function leagueId() {
+    if (typeof args.leagueId === 'undefined') {
+      var id = Drupal.settings.today.league_id;
+      if (typeof id === 'undefined' || id === null || id === 0) {
+        id = '00';
+      }
+      return id.toString();
+    }
+    return args.leagueId;
+  };
+
+  var league = function league() {
+    if (typeof args.league === 'undefined') {
+      var id = Drupal.settings.today.league_id;
+      if (typeof id === 'undefined' || id === null || id === 0) {
+        id = '00';
+      }
+      return leagues[id.toString()];
+    }
+    return args.league;
+  };
+
+  var monthNumber = function monthNumber() {
+    if (typeof args.league === 'undefined') {
+      var d = new Date();
+      var m = d.getMonth();
+      return m.toString();
+    }
+    return args.monthNumber;
+  };
+
+  var teamName = function teamName() {
+    var teams = {
+      hawks: 'hawks',
+      celtics: 'celtics',
+      nets: 'nets',
+      bulls: 'bulls',
+      cavaliers: 'cavaliers',
+      mavericks: 'mavericks',
+      nuggets: 'nuggets',
+      pistons: 'pistons',
+      warriors: 'warriors',
+      rockets: 'rockets',
+      pacers: 'pacers',
+      clippers: 'clippers',
+      lakers: 'lakers',
+      grizzlies: 'grizzlies',
+      heat: 'heat',
+      bucks: 'bucks',
+      timberwolves: 'timberwolves',
+      pelicans: 'pelicans',
+      hornets: 'hornets',
+      knicks: 'knicks',
+      thunder: 'thunder',
+      magic: 'magic',
+      sixers: '76ers',
+      suns: 'suns',
+      blazers: 'trail_blazers',
+      kings: 'kings',
+      spurs: 'spurs',
+      raptors: 'raptors',
+      jazz: 'jazz',
+      wizards: 'wizards'
+    };
+    if (typeof args.teamName === 'undefined') {
+      var team = '';
+      (0, _keys2.default)(teams).forEach(function (key) {
+        if (window.location.href.includes(key)) {
+          team = teams[key];
+        }
+      });
+      return team;
+    }
+    return args.teamName;
+  };
+
+  var returnList = {
+    seasonYear: seasonYear(),
+    seasonTypeId: seasonTypeId(),
+    leagueId: leagueId(),
+    league: league(),
+    monthNumber: monthNumber(),
+    teamName: teamName()
+  };
+
+  if (typeof args.gameId === 'string' && args.gameId.length === 10) {
+    returnList.seasonYear = '20' + args.gameId.substr(3, 2);
+    returnList.seasonTypeId = '0' + args.gameId.substr(2, 1);
+    returnList.leagueId = args.gameId.substr(0, 2);
+    returnList.league = leagues[leagueId];
+  }
+
+  return returnList;
+}
+
 //
-// ─── EXPORT FUNCTION ────────────────────────────────────────────────────────────
+// ─── EXPORT ─────────────────────────────────────────────────────────────────────
 //
 
+// Returns object with request methods
 var api = function api(token) {
   return {
     stats: {
       /* ----------  TODAYS SCORES  ----------*/
-      todaysScores: function todaysScores(args) {
-        checkArgs(args, ['league', 'seasonYear', 'leagueId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/scores/' + args.leagueId + '_todays_scores.json');
+      todaysScores: function todaysScores() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/' + newArgs.leagueId + '_todays_scores.json');
       },
 
       /* ----------  FULL GAME PLAY BY PLAY  ----------*/
-      fullGamePlayByPlay: function fullGamePlayByPlay(args) {
-        checkArgs(args, ['league', 'seasonYear', 'gameId', 'quarter']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/scores/pbp/' + args.gameId + '_' + args.quarter + '.json');
+      fullGamePlayByPlay: function fullGamePlayByPlay(gameId, quarter) {
+        var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/pbp/' + gameId + '_' + quarter + '.json');
       },
 
       /* ----------  ABBREVIATED PLAY BY PLAY  ----------*/
-      abbreviatedPlayByPlay: function abbreviatedPlayByPlay(args) {
-        checkArgs(args, ['league', 'seasonYear', 'gameId', 'quarter']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/scores/pbp/' + args.gameId + '_' + args.quarter + '.json');
+      abbreviatedPlayByPlay: function abbreviatedPlayByPlay(gameId, quarter) {
+        var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/pbp/' + gameId + '_' + quarter + '.json');
       },
 
       /* ----------  GAME DETAIL ----------*/
-      gameDetail: function gameDetail(args) {
-        checkArgs(args, ['league', 'seasonYear', 'gameId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/scores/gamedetail/' + args.gameId + '_gamedetail.json');
+      gameDetail: function gameDetail(gameId) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/gamedetail/' + gameId + '_gamedetail.json');
       },
 
       /* ----------  STANDINGS ----------*/
-      standings: function standings(args) {
-        checkArgs(args, ['league', 'seasonYear', 'leagueId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/' + args.leagueId + '_standings.json');
+      standings: function standings() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/' + newArgs.leagueId + '_standings.json');
       },
 
       /* ----------  PLAYOFF BRACKET  ----------*/
-      playoffBracket: function playoffBracket(args) {
-        checkArgs(args, ['league', 'seasonYear', 'leagueId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/scores/' + args.leagueId + '_playoff_bracket.json');
+      playoffBracket: function playoffBracket() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/' + newArgs.leagueId + '_playoff_bracket.json');
       },
 
       /* ----------  TEAM INFO  ----------*/
-      teamInfo: function teamInfo(args) {
-        checkArgs(args, ['league', 'seasonYear', 'leagueId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/teams/' + args.leagueId + '_team_info.json');
+      teamInfo: function teamInfo() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.leagueId + '_team_info.json');
       },
 
       /* ----------  PLAYER INFO  ----------*/
-      playerInfo: function playerInfo(args) {
-        checkArgs(args, ['league', 'seasonYear', 'leagueId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/players/' + args.leagueId + '_player_info.json');
+      playerInfo: function playerInfo() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/' + newArgs.leagueId + '_player_info.json');
       },
 
       /* ----------  ALL TIME LEADERS  ----------*/
-      allTimeLeaders: function allTimeLeaders(args) {
-        checkArgs(args, ['league', 'seasonYear', 'leagueId', 'statType', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/league/stats/' + args.leagueId + '_alltime_leaders_' + args.statType + '_' + args.seasonTypeId + '.json');
+      allTimeLeaders: function allTimeLeaders(statType) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/stats/' + newArgs.leagueId + '_alltime_leaders_' + statType + '_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  ALL TIME PLAYERS  ----------*/
-      allTimePlayers: function allTimePlayers(args) {
-        checkArgs(args, ['league', 'seasonYear', 'leagueId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/players/' + args.leagueId + '_historical_players.json');
+      allTimePlayers: function allTimePlayers() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/' + newArgs.leagueId + '_historical_players.json');
       },
 
       /* ----------  ALL TIME PLAYERS  ----------*/
-      leagueLeaders: function leagueLeaders(args) {
-        checkArgs(args, ['league', 'seasonYear', 'leagueId', 'statType', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/league/stats/' + args.leagueId + '_league_leaders_' + args.statType + '_' + args.seasonTypeId + '.json');
+      leagueLeaders: function leagueLeaders(statType) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/stats/' + newArgs.leagueId + '_league_leaders_' + statType + '_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  TEAM SCHEDULE  ----------*/
-      teamSchedule: function teamSchedule(args) {
-        checkArgs(args, ['league', 'seasonYear', 'teamName', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/teams/' + args.teamName + '_schedule_' + args.seasonTypeId + '.json');
+      teamSchedule: function teamSchedule() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_schedule_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  LEAGUE SCHEDULE  ----------*/
-      leagueSchedule: function leagueSchedule(args) {
-        checkArgs(args, ['league', 'seasonYear', 'leagueId', 'monthNumber']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/league/' + args.leagueId + '_league_schedule_' + args.monthNumber + '.json');
+      leagueSchedule: function leagueSchedule() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/' + newArgs.leagueId + '_league_schedule_' + newArgs.monthNumber + '.json');
       },
 
       /* ----------  ROLLING DAILY SCHEDULE  ----------*/
-      rollingDailySchedule: function rollingDailySchedule(args) {
-        checkArgs(args, ['league', 'seasonYear', 'leagueId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/league/' + args.leagueId + '_rolling_schedule.json');
+      rollingDailySchedule: function rollingDailySchedule() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/' + newArgs.leagueId + '_rolling_schedule.json');
       },
 
       /* ----------  TEAM ROSTER  ----------*/
-      teamRoster: function teamRoster(args) {
-        checkArgs(args, ['league', 'seasonYear', 'teamName']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/teams/' + args.teamName + '_roster.json');
+      teamRoster: function teamRoster() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_roster.json');
       },
 
       /* ----------  TEAM COACH  ----------*/
-      teamCoach: function teamCoach(args) {
-        checkArgs(args, ['league', 'seasonYear', 'teamName']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/teams/' + args.teamName + '_coach.json');
+      teamCoach: function teamCoach() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_coach.json');
       },
 
       /* ----------  TEAM PLAYER AVERAGES  ----------*/
-      teamPlayerAverages: function teamPlayerAverages(args) {
-        checkArgs(args, ['league', 'seasonYear', 'teamName', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/teams/' + args.teamName + '/player_averages_' + args.seasonTypeId + '.json');
+      teamPlayerAverages: function teamPlayerAverages() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '/player_averages_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  TEAM STATISTICS  ----------*/
-      teamStatistics: function teamStatistics(args) {
-        checkArgs(args, ['league', 'seasonYear', 'teamName', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/teams/statistics/' + args.teamName + '/teamstats_' + args.seasonTypeId + '.json');
+      teamStatistics: function teamStatistics() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/teamstats_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  TEAM LEADERS OVERALL FILE  ----------*/
-      teamLeadersOverallFile: function teamLeadersOverallFile(args) {
-        checkArgs(args, ['league', 'seasonYear', 'teamName', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/teams/statistics/' + args.teamName + '/teamstats_' + args.seasonTypeId + '.json');
+      teamLeadersOverallFile: function teamLeadersOverallFile() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/teamstats_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  TEAM LEADERS DETAIL STATS  ----------*/
-      teamLeadersDetailStats: function teamLeadersDetailStats(args) {
-        checkArgs(args, ['league', 'seasonYear', 'teamName', 'statType', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/teams/statistics/' + args.teamName + '/leaders_detail_' + args.statType + '_' + args.seasonTypeId + '.json');
+      teamLeadersDetailStats: function teamLeadersDetailStats(statType) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/leaders_detail_' + statType + '_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  TEAM SEASON AVERAGES  ----------*/
-      teamSeasonAverages: function teamSeasonAverages(args) {
-        checkArgs(args, ['league', 'seasonYear', 'teamName', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/teams/statistics/' + args.teamName + '/season_averages_' + args.seasonTypeId + '.json');
+      teamSeasonAverages: function teamSeasonAverages() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/season_averages_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  ADVANCED TEAM AND PLAYER STATS  ----------*/
-      advancedTeamAndPlayerStats: function advancedTeamAndPlayerStats(args) {
-        checkArgs(args, ['league', 'seasonYear', 'teamName', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/teams/statistics/' + args.teamName + '/advanced_stats_' + args.seasonTypeId + '.json');
+      advancedTeamAndPlayerStats: function advancedTeamAndPlayerStats() {
+        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/advanced_stats_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  PLAYER CARDS  ----------*/
-      playerCards: function playerCards(args) {
-        checkArgs(args, ['league', 'seasonYear', 'playerId', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/players/playercard_' + args.playerId + '_' + args.seasonTypeId + '.json');
+      playerCards: function playerCards(playerId) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/playercard_' + playerId + '_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  PLAYER RANKS  ----------*/
-      playerRanks: function playerRanks(args) {
-        checkArgs(args, ['league', 'seasonYear', 'playerId', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/players/player_ranks_' + args.playerId + '_' + args.seasonTypeId + '.json');
+      playerRanks: function playerRanks(playerId) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/player_ranks_' + playerId + '_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  PLAYER SPLITS  ----------*/
-      playerSplits: function playerSplits(args) {
-        checkArgs(args, ['league', 'seasonYear', 'playerId', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/players/player_splits_' + args.playerId + '_' + args.seasonTypeId + '.json');
+      playerSplits: function playerSplits(playerId) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/player_splits_' + playerId + '_' + newArgs.seasonTypeId + '.json');
       },
 
       /* ----------  PLAYER HIGHS  ----------*/
-      playerHighs: function playerHighs(args) {
-        checkArgs(args, ['league', 'seasonYear', 'playerId', 'seasonTypeId']);
-        return fetchStats(args.league + '/' + args.seasonYear + '/players/player_highs_' + args.playerId + '_' + args.seasonTypeId + '.json');
+      playerHighs: function playerHighs(playerId) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/player_highs_' + playerId + '_' + newArgs.seasonTypeId + '.json');
       }
     },
     /* ----------  CONTENT API  ----------*/

@@ -2,7 +2,7 @@
 # NBA Feeds
 Asynchronously fetch data from mobile stat feed, content API, and stats.nba.com.
 
-## Installation
+## Install
 ```bash
 npm install nba-feeds
 ```
@@ -11,7 +11,9 @@ npm install nba-feeds
 ```js
 import nbaFeeds from 'nba-feeds';
 
-const nba = nbaFeeds('< content API access token goes here >');
+const nba = nbaFeeds('<content API access token>');
+
+const standings = async () => await nba.stats.standings(year: '2017')
 ```
 
 ## Feeds
@@ -78,7 +80,7 @@ abbreviatedPlayByPlay({league, seasonYear, gameId, quarter})
 ```
 This feed contains abbreviated play by play list: The last 20 events before current point in the game are provided. These
 events can go across quarters. This updates real time during live games.
-#####Game Detail
+##### Game Detail
 ```js
 gameDetail({league, seasonYear, gameId})
 ```
@@ -231,7 +233,7 @@ playerSplits({league, seasonYear, playerId, seasonTypeId})
 The Player splits are available for preseason, regular season, and playoffs. It includes breakdown of totals and per game
 averages for various statistical categories based on various split categories and the corresponding splits within. A separate
 player split file is generated for each season type.
-##### Player Hights
+##### Player Highs
 ```js
 playerHighs({league, seasonYear, playerId, seasonTypeId})
 ```
