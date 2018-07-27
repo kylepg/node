@@ -9,51 +9,39 @@ npm install nba-feeds
 
 ## Usage
 ```js
-import nbaFeeds from 'nba-feeds';
+import nbaFeeds from `nba-feeds`;
 
-const nba = nbaFeeds('<content API access token>');
-
-const standings = async () => await nba.stats.standings(year: '2017')
+const nba = nbaFeeds(contentApiTokenGoesHere);
 ```
 
-## Feeds
-
 ### Mobile Stats
+Default values:
 
-#### Season Type ID
-* 01 – Preseason
-* 02 – Regular Season
-* 03 – All-star
-* 04 – Playoffs
+`seasonYear: seasonYear()`
+`seasonTypeId: seasonTypeId()`
+`leagueId: leagueId()`
+`league: league()`
+`monthNumber: monthNumber()`
+`teamName: teamName()`
 
-#### League ID
-* 00 – NBA
-* 10 – WNBA
-* 14 – NBA Orlando Summer League
-* 15 – NBA Las Vegas Summer League
-* 16 – NBA Utah Summer League (Rocky Mountain Revue)
-* 20 – NBA Developmental League 
+The final parameter of each feed call is an object that can be used to  override the default values above. For example: `nba.stats.standings({seasonYear: 2015});`
 
-#### League Name
-* NBA (00): nba
-* WNBA (10): wnba
-* NBA Orlando Summer League (14): orlando
-* NBA Las Vegas Summer League (15): vegas
-* NBA Utah Summer League (Rocky Mountain Revue) (16): utah
-* NBA Developmental League (20): dleague
+The following values **must** be specified when they are required:
 
+`statType`
+`gameId`
+`playerId`
 
-#### Cache Control Values
-* 5s – five seconds
-* 10s – ten seconds
-* 30s – thirty seconds
-* 1m – one minute (sixty seconds)
-* 1h – one hour (3,600 seconds) 
-
-Example:
+##### Example usage
 ```js
-// Return playoff bracket JSON
-const playoffBracket = await nba.stats.playoffBracket({ league: 'nba', seasonYear: '2017', leagueId: '00' });
+// Return current league standings
+const standings = await nba.stats.standings();
+
+// Return league standings from 2015
+const standings = await nba.stats.standings({seasonYear: 2015});
+
+// Return player highs
+const playerHighs = await nba.stats.playerHighs(201142);
 ```
 
 
@@ -70,19 +58,19 @@ logged.
 
 ##### Full Game Play by Play
 ```js
-fullGamePlayByPlay({league, seasonYear, gameId, quarter})
+fullGamePlayByPlay(gameId, quarter, {league, seasonYear})
 ```
 This feed contains play by play data by period (including overtimes) for each game, and updates in real time during live
 games.
 ##### Abbreviated Play by Play
 ```js
-abbreviatedPlayByPlay({league, seasonYear, gameId, quarter})
+abbreviatedPlayByPlay(gameId, {league, seasonYear})
 ```
 This feed contains abbreviated play by play list: The last 20 events before current point in the game are provided. These
 events can go across quarters. This updates real time during live games.
 ##### Game Detail
 ```js
-gameDetail({league, seasonYear, gameId})
+gameDetail(gameId, {league, seasonYear})
 ```
 This feed contains the full boxscore for a game. Updates occur in real time during live games.
 NOTE: Removed from this feed are the team season averages. This can now be found in a separate feed. The Last Meeting
@@ -118,7 +106,7 @@ This feed contains information on all players and the teams that they have been 
 daily.
 ##### All Time Leaders
 ```js
-allTimeLeaders({league, seasonYear, leagueId, statType, seasonTypeId})
+allTimeLeaders(statType, seasonTypeId, {league, seasonYear, leagueId})
 ```
 The all-time leaders files are generate for various statistical categories and contain the career totals and per game leaders for
 the entire league history. A separate player card file is generated for each season type.
@@ -132,7 +120,7 @@ whether the player is currently active.
 
 ##### League Leaders
 ```js
-leagueLeaders({league, seasonYear, leagueId, statType, seasonTypeId})
+leagueLeaders(statType, {league, seasonYear, leagueId, seasonTypeId})
 ```
 The league leaders files are generate for various statistical categories and contain the league totals and per game leaders for
 the season. A separate league leader file is generated for each season type.
@@ -195,7 +183,7 @@ This feed shows team leaders in points, assists, rebounds, field goals, free thr
 turnovers. It is updated after every game night. A separate team leaders overall file is generated for each season type.
 ##### Team Leaders Detail Stats
 ```js
-teamLeadersDetailStats({league, seasonYear, teamName, statType, seasonTypeId})
+teamLeadersDetailStats(statType, {league, seasonYear, teamName, seasonTypeId})
 ```
 This feed is updated after every game night. A separate file is generated for each stat and each season type.
 ##### Team Season Averages
@@ -213,14 +201,14 @@ players on the values. Players can appear in more than one team’s file as the 
 while on said team. There is a roster status attribute to ignore said players if desired.
 ##### Player Cards
 ```js
-playerCards({league, seasonYear, playerId, seasonTypeId})
+playerCards(playerId, {league, seasonYear, seasonTypeId})
 ```
 The Player cards are available for preseason, regular season, and playoffs. Season Year has been added to the URL format,
 so that you can get player cards for previous seasons. Game logs are also included. A separate player card file is generated
 for each season type.
 ##### Player Ranks
 ```js
-playerRanks({league, seasonYear, playerId, seasonTypeId})
+playerRanks(playerId, {league, seasonYear, seasonTypeId})
 ```
 The Player ranks files are available for preseason, regular season, and playoffs. It includes a player’s ranks and values for
 various statistical categories. It has ranks for totals, per game averages and per minute. The per minute stat values are per
@@ -228,20 +216,107 @@ forty minutes for WNBA and per forty eight minutes for all others. A separate pl
 type.
 ##### Player Splits
 ```js
-playerSplits({league, seasonYear, playerId, seasonTypeId})
+playerSplits(playerId, {league, seasonYear, seasonTypeId})
 ```
 The Player splits are available for preseason, regular season, and playoffs. It includes breakdown of totals and per game
 averages for various statistical categories based on various split categories and the corresponding splits within. A separate
 player split file is generated for each season type.
 ##### Player Highs
 ```js
-playerHighs({league, seasonYear, playerId, seasonTypeId})
+playerHighs(playerId, {league, seasonYear, seasonTypeId})
 ```
 The Player highs files are available for preseason, regular season, and playoffs. It includes a player’s career and season
 highs in various statistical categories. If the value is non-zero, it contains a list of the games it occurred. A separate player
 highs file is generated for each season type.
 
+
+### Content API
+
+[Feed documentation](https://nbateams.atlassian.net/wiki/spaces/NBA/pages/589949/Content+API+Feeds)
+
+Allowed parameters:
+
+`freeform`
+`games`
+`gameRelated`
+`writer`
+`players`
+`teams`
+`topics`
+`events`
+`streamState`
+`channels`
+`section`
+`body`
+`headline`
+`shortHeadline`
+`subheadline`
+`title`
+`description`
+`url`
+`before`
+`after`
+`lang`
+`sort`
+`offset`
+`count`
+`verbose`
+
+##### Example Usage
+```js
+// Get last 50 Celtics videos
+nba.content(`celtics`, { count: 50 , type: 'video'})
+
+// Get last 10 Celtics 'Keys To The Game' stories that we published after a certain date
+nba.content(`celtics`, {
+      freeform: ['Keys To The Game'],
+      types: ['article'],
+      count: 10,
+      after:  1523664000
+});
+```
+
+
+
+
+
+## Value Key
+
+
+#### Season Type ID
+* 01 – Preseason
+* 02 – Regular Season
+* 03 – All-star
+* 04 – Playoffs
+
+#### League ID
+* 00 – NBA
+* 10 – WNBA
+* 14 – NBA Orlando Summer League
+* 15 – NBA Las Vegas Summer League
+* 16 – NBA Utah Summer League (Rocky Mountain Revue)
+* 20 – NBA Developmental League 
+
+#### League Name
+* NBA (00): nba
+* WNBA (10): wnba
+* NBA Orlando Summer League (14): orlando
+* NBA Las Vegas Summer League (15): vegas
+* NBA Utah Summer League (Rocky Mountain Revue) (16): utah
+* NBA Developmental League (20): dleague
+
+
+#### Cache Control Values
+* 5s – five seconds
+* 10s – ten seconds
+* 30s – thirty seconds
+* 1m – one minute (sixty seconds)
+* 1h – one hour (3,600 seconds) 
+
+
+
 <!-- 
+
 
 
 
@@ -250,15 +325,15 @@ highs file is generated for each season type.
 #####Example 
 ```js
 // Return player awards
-const playerAwards = await nba.leagueStats('https://stats.nba.com/stats/playerawards?PlayerID=201143');
+const playerAwards = await nba.leagueStats(`https://stats.nba.com/stats/playerawards?PlayerID=201143`);
 ```
 
 ####Content API
 #####Example 
 ```js
 // Return highlights
-const highlights = await nba.content('celtics', {
-      types: ['wsc', 'imported_video'],
+const highlights = await nba.content(`celtics`, {
+      types: [`wsc`, `imported_video`],
       count: 50,
       after: null,
       before: null 
