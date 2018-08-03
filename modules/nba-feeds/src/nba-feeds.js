@@ -144,54 +144,14 @@ function defineOtherArgs(args) {
 
   const monthNumber = () => {
     if (typeof (args.league) === 'undefined') {
-      const d = new Date();
-      const m = d.getMonth();
-      return m.toString();
+      return Drupal.settings.today.sys_month;
     }
     return args.monthNumber;
   };
 
   const teamName = () => {
-    const teams = {
-      hawks: 'hawks',
-      celtics: 'celtics',
-      nets: 'nets',
-      bulls: 'bulls',
-      cavaliers: 'cavaliers',
-      mavericks: 'mavericks',
-      nuggets: 'nuggets',
-      pistons: 'pistons',
-      warriors: 'warriors',
-      rockets: 'rockets',
-      pacers: 'pacers',
-      clippers: 'clippers',
-      lakers: 'lakers',
-      grizzlies: 'grizzlies',
-      heat: 'heat',
-      bucks: 'bucks',
-      timberwolves: 'timberwolves',
-      pelicans: 'pelicans',
-      hornets: 'hornets',
-      knicks: 'knicks',
-      thunder: 'thunder',
-      magic: 'magic',
-      sixers: '76ers',
-      suns: 'suns',
-      blazers: 'trail_blazers',
-      kings: 'kings',
-      spurs: 'spurs',
-      raptors: 'raptors',
-      jazz: 'jazz',
-      wizards: 'wizards'
-    };
     if (typeof (args.teamName) === 'undefined') {
-      let team = '';
-      Object.keys(teams).forEach((key) => {
-        if (window.location.href.includes(key)) {
-          team = teams[key];
-        }
-      });
-      return team;
+      return Drupal.settings.team.CODE;
     }
     return args.teamName;
   };

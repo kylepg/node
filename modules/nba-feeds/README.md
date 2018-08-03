@@ -19,10 +19,10 @@ Default values:
 
 `league: 'nba'`
 `leagueId: Drupal.settings.today.league_id`
-`teamName: 'celtics'`
+`teamName: 'Drupal.settings.team.CODE'`
 `seasonYear: Drupal.settings.today.season_year`
 `seasonTypeId: Drupal.settings.today.season_stage`
-`monthNumber: date.getMonth()`
+`monthNumber: Drupal.settings.today.sys_month`
 
 The final parameter of each feed call is an object that can be used to  override the default values above. For example: `nba.stats.standings({seasonYear: 2015});`
 
