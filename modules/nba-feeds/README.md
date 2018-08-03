@@ -50,11 +50,14 @@ const playerHighs = await nba.stats.playerHighs(201142);
 ```js
 todaysScores({league, seasonYear, leagueId})
 ```
+<details open>
+<summary>Description...</summary>
+<br>
 This is a real time update for every game that plays on the current day for the designated league. Initially generated on game
 day, it will contain all the games for the day and will be updated with scores in real time. Last meeting is included in this feed.
 This will refresh at noon with the games for the upcoming day/night. For days with no games (Thanksgiving, Christmas Eve),
 the contents will be just the gs element. If a game occurs before noon, the file will be created when that game’s events are
-logged.
+logged.</details>
 
 ##### Full Game Play by Play
 ```js
