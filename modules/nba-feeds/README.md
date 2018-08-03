@@ -9,9 +9,27 @@ npm install nba-feeds
 
 ## Usage
 ```js
-import nbaFeeds from `nba-feeds`;
-
+<script src="nba-feeds.js"></script>
 const nba = nbaFeeds(contentApiTokenGoesHere);
+// CommonJS
+const nbafeeds = require(`nba-feeds`);
+const nba = nbaFeeds(contentApiTokenGoesHere);
+
+// ES6 Imports 
+import nbaFeeds from `nba-feeds`;
+const nba = nbaFeeds(contentApiTokenGoesHere);
+```
+
+##### Examples
+```js
+// Return current league standings
+const standings = await nba.stats.standings();
+
+// Return league standings from 2015
+const standings = await nba.stats.standings({seasonYear: 2015});
+
+// Return player highs
+const playerHighs = await nba.stats.playerHighs(201142);
 ```
 
 ### Mobile Stats
@@ -32,17 +50,6 @@ The following parameters **must** be specified:
 `gameId`<br>
 `playerId`<br>
 
-##### Example usage
-```js
-// Return current league standings
-const standings = await nba.stats.standings();
-
-// Return league standings from 2015
-const standings = await nba.stats.standings({seasonYear: 2015});
-
-// Return player highs
-const playerHighs = await nba.stats.playerHighs(201142);
-```
 
 
 
@@ -466,10 +473,10 @@ Allowed parameters:
 
 ##### Example Usage
 ```js
-// Get last 50 Celtics videos
+// Get the last 50 Celtics videos
 nba.content(`celtics`, { count: 50 , type: 'video'})
 
-// Get last 10 Celtics 'Keys To The Game' stories that we published after a certain date
+// Get the last 10 Celtics articles tagged with 'Keys To The Game' published after 4/13/2018
 nba.content(`celtics`, {
       freeform: ['Keys To The Game'],
       types: ['article'],
