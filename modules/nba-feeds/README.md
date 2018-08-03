@@ -19,7 +19,7 @@ Default values:
 
 `league: 'nba'`<br>
 `leagueId: Drupal.settings.today.league_id`<br>
-`teamName: 'Drupal.settings.team.CODE'`<br>
+`teamName: Drupal.settings.team.CODE`<br>
 `seasonYear: Drupal.settings.today.season_year`<br>
 `seasonTypeId: Drupal.settings.today.season_stage`<br>
 `monthNumber: Drupal.settings.today.sys_month`<br>
@@ -28,9 +28,9 @@ The final parameter of each feed call is an object that can be used to  override
 
 The following parameters **must** be specified:
 
-`statType`
-`gameId`
-`playerId`
+`statType`<br>
+`gameId`<br>
+`playerId`<br>
 
 ##### Example usage
 ```js
