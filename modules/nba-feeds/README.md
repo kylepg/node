@@ -8,9 +8,15 @@ npm install nba-feeds
 ```
 
 ## Usage
+```html 
+<!-- Browser -->
+<script src="path/to/nba-feeds.js"></script>
+<script>
+      var nba = nbaFeeds(contentApiTokenGoesHere);
+</script>
+```
+
 ```js
-<script src="nba-feeds.js"></script>
-const nba = nbaFeeds(contentApiTokenGoesHere);
 // CommonJS
 const nbafeeds = require(`nba-feeds`);
 const nba = nbaFeeds(contentApiTokenGoesHere);
@@ -484,10 +490,6 @@ nba.content(`celtics`, {
       after:  1523664000
 });
 ```
-
-
-
-
 
 ## Value Key
 
