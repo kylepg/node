@@ -55,7 +55,7 @@ This is a real time update for every game that plays on the current day for the 
 day, it will contain all the games for the day and will be updated with scores in real time. Last meeting is included in this feed.
 This will refresh at noon with the games for the upcoming day/night. For days with no games (Thanksgiving, Christmas Eve),
 the contents will be just the gs element. If a game occurs before noon, the file will be created when that game’s events are
-logged.
+logged.<br>
 </details>
 
 
@@ -71,7 +71,7 @@ todaysScores({league, seasonYear, leagueId})
 This feed contains play by play data by period (including overtimes) for each game, and updates in real time during live
 games.
 </details>
-
+<br>
 ```js
 fullGamePlayByPlay(gameId, quarter, {league, seasonYear})
 ```
