@@ -17,12 +17,12 @@ const nba = nbaFeeds(contentApiTokenGoesHere);
 ### Mobile Stats
 Default values:
 
-`league: 'nba'`
-`leagueId: Drupal.settings.today.league_id`
-`teamName: 'Drupal.settings.team.CODE'`
-`seasonYear: Drupal.settings.today.season_year`
-`seasonTypeId: Drupal.settings.today.season_stage`
-`monthNumber: Drupal.settings.today.sys_month`
+`league: 'nba'`<br>
+`leagueId: Drupal.settings.today.league_id`<br>
+`teamName: 'Drupal.settings.team.CODE'`<br>
+`seasonYear: Drupal.settings.today.season_year`<br>
+`seasonTypeId: Drupal.settings.today.season_stage`<br>
+`monthNumber: Drupal.settings.today.sys_month`<br>
 
 The final parameter of each feed call is an object that can be used to  override the default values above. For example: `nba.stats.standings({seasonYear: 2015});`
 
