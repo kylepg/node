@@ -1,7 +1,7 @@
 {
   "name": "nba-feeds",
-  "version": "1.0.1",
-  "description": "Return feed urls.",
+  "version": "1.0.4",
+  "description": "NBA feeds",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -151,7 +151,7 @@ function defineOtherArgs(args) {
 
   const teamName = () => {
     if (typeof (args.teamName) === 'undefined') {
-      return Drupal.settings.team.CODE;
+      return Drupal.settings.team.code;
     }
     return args.teamName;
   };

@@ -30,12 +30,14 @@ const nba = nbaFeeds(contentApiTokenGoesHere);
 ```js
 // Return current league standings
 const standings = await nba.stats.standings();
+console.log(standings)
 
 // Return league standings from 2015
-const standings = await nba.stats.standings({seasonYear: 2015});
+const standings = nba.stats.standings({seasonYear: 2015});
 
 // Return player highs
 const playerHighs = await nba.stats.playerHighs(201142);
+console.log(playerHighs)
 ```
 
 ### Mobile Stats
