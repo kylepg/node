@@ -4,10 +4,6 @@ var _getOwnPropertyNames = require('babel-runtime/core-js/object/get-own-propert
 
 var _getOwnPropertyNames2 = _interopRequireDefault(_getOwnPropertyNames);
 
-var _keys = require('babel-runtime/core-js/object/keys');
-
-var _keys2 = _interopRequireDefault(_keys);
-
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -33,22 +29,22 @@ var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
 // Fetch browser compatibility
 var fetchStats = function () {
-  var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(url) {
+  var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(url, fallbackUrl) {
     var urlRoot, promise, response;
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             urlRoot = 'https://data.nba.com/data/v2015/json/mobile_teams/';
-            // const rnd = Math.floor(Math.random() * 99999);
-
             promise = fetch('' + urlRoot + url).then(function (res) {
-              if (!res.ok) {
-                throw new Error(res.status + ' - Failed to fetch stats at: ' + urlRoot + url);
-              }
-              return res;
-            }).then(function (res) {
               return res.json();
+            }).catch(function () {
+              if (typeof fallbackUrl !== 'undefined') {
+                return fetch('' + fallbackUrl).then(function (res) {
+                  return res.json();
+                });
+              }
+              return '';
             });
             _context.next = 4;
             return promise;
@@ -65,7 +61,7 @@ var fetchStats = function () {
     }, _callee, this);
   }));
 
-  return function fetchStats(_x) {
+  return function fetchStats(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -101,7 +97,7 @@ var fetchContent = function () {
     }, _callee2, this);
   }));
 
-  return function fetchContent(_x2, _x3, _x4, _x5) {
+  return function fetchContent(_x3, _x4, _x5, _x6) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -134,7 +130,7 @@ var fetchLeagueStats = function () {
     }, _callee3, this);
   }));
 
-  return function fetchLeagueStats(_x6) {
+  return function fetchLeagueStats(_x7) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -242,56 +238,23 @@ function defineOtherArgs(args) {
 
   var monthNumber = function monthNumber() {
     if (typeof args.league === 'undefined') {
-      var d = new Date();
-      var m = d.getMonth();
-      return m.toString();
+      return Drupal.settings.today.sys_month;
     }
     return args.monthNumber;
   };
 
   var teamName = function teamName() {
-    var teams = {
-      hawks: 'hawks',
-      celtics: 'celtics',
-      nets: 'nets',
-      bulls: 'bulls',
-      cavaliers: 'cavaliers',
-      mavericks: 'mavericks',
-      nuggets: 'nuggets',
-      pistons: 'pistons',
-      warriors: 'warriors',
-      rockets: 'rockets',
-      pacers: 'pacers',
-      clippers: 'clippers',
-      lakers: 'lakers',
-      grizzlies: 'grizzlies',
-      heat: 'heat',
-      bucks: 'bucks',
-      timberwolves: 'timberwolves',
-      pelicans: 'pelicans',
-      hornets: 'hornets',
-      knicks: 'knicks',
-      thunder: 'thunder',
-      magic: 'magic',
-      sixers: '76ers',
-      suns: 'suns',
-      blazers: 'trail_blazers',
-      kings: 'kings',
-      spurs: 'spurs',
-      raptors: 'raptors',
-      jazz: 'jazz',
-      wizards: 'wizards'
-    };
     if (typeof args.teamName === 'undefined') {
-      var team = '';
-      (0, _keys2.default)(teams).forEach(function (key) {
-        if (window.location.href.includes(key)) {
-          team = teams[key];
-        }
-      });
-      return team;
+      return Drupal.settings.team.CODE;
     }
     return args.teamName;
+  };
+
+  var fallbackUrl = function fallbackUrl() {
+    if (typeof args.fallbackUrl === 'undefined') {
+      return null;
+    }
+    return args.fallbackUrl;
   };
 
   var returnList = {
@@ -300,7 +263,8 @@ function defineOtherArgs(args) {
     leagueId: leagueId(),
     league: league(),
     monthNumber: monthNumber(),
-    teamName: teamName()
+    teamName: teamName(),
+    fallbackUrl: fallbackUrl()
   };
 
   if (typeof args.gameId === 'string' && args.gameId.length === 10) {
@@ -326,7 +290,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/' + newArgs.leagueId + '_todays_scores.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/' + newArgs.leagueId + '_todays_scores.json', args.fallbackUrl);
       },
 
       /* ----------  FULL GAME PLAY BY PLAY  ----------*/
@@ -334,7 +298,7 @@ var api = function api(token) {
         var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/pbp/' + gameId + '_' + quarter + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/pbp/' + gameId + '_' + quarter + '.json', args.fallbackUrl);
       },
 
       /* ----------  ABBREVIATED PLAY BY PLAY  ----------*/
@@ -342,7 +306,7 @@ var api = function api(token) {
         var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/pbp/' + gameId + '_' + quarter + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/pbp/' + gameId + '_' + quarter + '.json', args.fallbackUrl);
       },
 
       /* ----------  GAME DETAIL ----------*/
@@ -350,7 +314,7 @@ var api = function api(token) {
         var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/gamedetail/' + gameId + '_gamedetail.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/gamedetail/' + gameId + '_gamedetail.json', args.fallbackUrl);
       },
 
       /* ----------  STANDINGS ----------*/
@@ -358,7 +322,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/' + newArgs.leagueId + '_standings.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/' + newArgs.leagueId + '_standings.json', args.fallbackUrl);
       },
 
       /* ----------  PLAYOFF BRACKET  ----------*/
@@ -366,7 +330,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/' + newArgs.leagueId + '_playoff_bracket.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/' + newArgs.leagueId + '_playoff_bracket.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM INFO  ----------*/
@@ -374,7 +338,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.leagueId + '_team_info.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.leagueId + '_team_info.json', args.fallbackUrl);
       },
 
       /* ----------  PLAYER INFO  ----------*/
@@ -382,7 +346,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/' + newArgs.leagueId + '_player_info.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/' + newArgs.leagueId + '_player_info.json', args.fallbackUrl);
       },
 
       /* ----------  ALL TIME LEADERS  ----------*/
@@ -390,7 +354,7 @@ var api = function api(token) {
         var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/stats/' + newArgs.leagueId + '_alltime_leaders_' + statType + '_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/stats/' + newArgs.leagueId + '_alltime_leaders_' + statType + '_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  ALL TIME PLAYERS  ----------*/
@@ -398,7 +362,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/' + newArgs.leagueId + '_historical_players.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/' + newArgs.leagueId + '_historical_players.json', args.fallbackUrl);
       },
 
       /* ----------  ALL TIME PLAYERS  ----------*/
@@ -406,7 +370,7 @@ var api = function api(token) {
         var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/stats/' + newArgs.leagueId + '_league_leaders_' + statType + '_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/stats/' + newArgs.leagueId + '_league_leaders_' + statType + '_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM SCHEDULE  ----------*/
@@ -414,7 +378,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_schedule_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_schedule_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  LEAGUE SCHEDULE  ----------*/
@@ -422,7 +386,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/' + newArgs.leagueId + '_league_schedule_' + newArgs.monthNumber + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/' + newArgs.leagueId + '_league_schedule_' + newArgs.monthNumber + '.json', args.fallbackUrl);
       },
 
       /* ----------  ROLLING DAILY SCHEDULE  ----------*/
@@ -430,7 +394,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/' + newArgs.leagueId + '_rolling_schedule.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/league/' + newArgs.leagueId + '_rolling_schedule.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM ROSTER  ----------*/
@@ -438,7 +402,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_roster.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_roster.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM COACH  ----------*/
@@ -446,7 +410,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_coach.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_coach.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM PLAYER AVERAGES  ----------*/
@@ -454,7 +418,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '/player_averages_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '/player_averages_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM STATISTICS  ----------*/
@@ -462,7 +426,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/teamstats_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/teamstats_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM LEADERS OVERALL FILE  ----------*/
@@ -470,7 +434,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/teamstats_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/teamstats_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM LEADERS DETAIL STATS  ----------*/
@@ -478,7 +442,7 @@ var api = function api(token) {
         var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/leaders_detail_' + statType + '_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/leaders_detail_' + statType + '_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM SEASON AVERAGES  ----------*/
@@ -486,7 +450,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/season_averages_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/season_averages_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  ADVANCED TEAM AND PLAYER STATS  ----------*/
@@ -494,7 +458,7 @@ var api = function api(token) {
         var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/advanced_stats_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/advanced_stats_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  PLAYER CARDS  ----------*/
@@ -502,7 +466,7 @@ var api = function api(token) {
         var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/playercard_' + playerId + '_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/playercard_' + playerId + '_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  PLAYER RANKS  ----------*/
@@ -510,7 +474,7 @@ var api = function api(token) {
         var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/player_ranks_' + playerId + '_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/player_ranks_' + playerId + '_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  PLAYER SPLITS  ----------*/
@@ -518,7 +482,7 @@ var api = function api(token) {
         var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/player_splits_' + playerId + '_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/player_splits_' + playerId + '_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  PLAYER HIGHS  ----------*/
@@ -526,7 +490,7 @@ var api = function api(token) {
         var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/player_highs_' + playerId + '_' + newArgs.seasonTypeId + '.json');
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/players/player_highs_' + playerId + '_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       }
     },
     /* ----------  CONTENT API  ----------*/

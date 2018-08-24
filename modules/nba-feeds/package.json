@@ -1,11 +1,9 @@
 {
   "name": "nba-feeds",
-  "version": "1.0.4",
+  "version": "1.0.11",
   "description": "NBA feeds",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "author": "Kyle George <kylepgeorge@gmail.com>",
   "license": "MIT",
   "dependencies": {
