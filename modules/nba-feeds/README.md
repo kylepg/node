@@ -298,7 +298,7 @@ available for regular all-star and rookie-sophomore teams based on team name.
 <br>
 
 ```js
-rollingDailySchedule({league, seasonYear, teamName})
+rollingDailySchedule(teamName, {league, seasonYear})
 ```
 
 ##### Team Player Averages
@@ -312,7 +312,7 @@ various stats. It is updated after every game night. A separate team season aver
 <br>
 
 ```js
-teamPlayerAverages({league, seasonYear, teamName, seasonTypeId})
+teamPlayerAverages(teamName, {league, seasonYear, seasonTypeId})
 ```
 
 ##### Team Statistics
@@ -326,7 +326,7 @@ for each season type.
 <br>
 
 ```js
-teamStatistics({league, seasonYear, teamName, seasonTypeId})
+teamStatistics(teamName, {league, seasonYear, seasonTypeId})
 ```
 
 ##### Team Leaders Overall File
@@ -340,7 +340,7 @@ turnovers. It is updated after every game night. A separate team leaders overall
 <br>
 
 ```js
-teamLeadersOverallFile({league, seasonYear, teamName, seasonTypeId})
+teamLeadersOverallFile(teamName, {league, seasonYear, seasonTypeId})
 ```
 
 ##### Team Leaders Detail Stats
@@ -353,7 +353,7 @@ This feed is updated after every game night. A separate file is generated for ea
 <br>
 
 ```js
-teamLeadersDetailStats(statType, {league, seasonYear, teamName, seasonTypeId})
+teamLeadersDetailStats(teamName, statType, {league, seasonYear, seasonTypeId})
 ```
 
 ##### Team Season Averages
@@ -367,7 +367,7 @@ team season averages file is generated for each stat and each season type.
 <br>
 
 ```js
-teamSeasonAverages({league, seasonYear, teamName, seasonTypeId})
+teamSeasonAverages(teamName, {league, seasonYear, seasonTypeId})
 ```
 
 ##### Advanced Team And Player Stats
@@ -382,7 +382,7 @@ while on said team. There is a roster status attribute to ignore said players if
 <br>
 
 ```js
-advancedTeamAndPlayerStats({league, seasonYear, teamName, seasonTypeId})
+advancedTeamAndPlayerStats(teamName, {league, seasonYear, seasonTypeId})
 ```
 
 ##### Player Cards
