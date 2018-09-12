@@ -284,7 +284,7 @@ NBA draft when rosters are posted. All-star rosters are produced for east/west a
 <br>
 
 ```js
-teamRoster({league, seasonYear, teamName})
+teamRoster(teamName, {league, seasonYear})
 ```
 
 ##### Team Coach
