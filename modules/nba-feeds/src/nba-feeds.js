@@ -84,7 +84,7 @@ function pathCreator(property, fallback, query) {
 }
 
 // Generate a list of request arguments
-function defineOtherArgs(args) {
+function defineOtherArgs(args, gid = null) {
   const leagues = {
     '00': 'nba',
     10: 'wnba',
@@ -95,6 +95,10 @@ function defineOtherArgs(args) {
   };
   const seasonYear = () => {
     if (typeof (args.seasonYear) === 'undefined') {
+      if (gid !== null) {
+        const yy = gid.substr(3, 2);
+        return `20${yy}`;
+      }
       if (typeof (Drupal.settings.today.season_year) === 'undefined' || seasonYear === null) {
         const d = new Date();
         let y = d.getFullYear();
@@ -199,17 +203,17 @@ const api = function (token) {
       },
       /* ----------  FULL GAME PLAY BY PLAY  ----------*/
       fullGamePlayByPlay(gameId, quarter, args = {}) {
-        const newArgs = defineOtherArgs(args);
+        const newArgs = defineOtherArgs(args, gameId);
         return fetchStats(`${newArgs.league}/${newArgs.seasonYear}/scores/pbp/${gameId}_${quarter}.json`, args.fallbackUrl);
       },
       /* ----------  ABBREVIATED PLAY BY PLAY  ----------*/
       abbreviatedPlayByPlay(gameId, quarter, args = {}) {
-        const newArgs = defineOtherArgs(args);
+        const newArgs = defineOtherArgs(args, gameId);
         return fetchStats(`${newArgs.league}/${newArgs.seasonYear}/scores/pbp/${gameId}_${quarter}.json`, args.fallbackUrl);
       },
       /* ----------  GAME DETAIL ----------*/
       gameDetail(gameId, args = {}) {
-        const newArgs = defineOtherArgs(args);
+        const newArgs = defineOtherArgs(args, gameId);
         return fetchStats(`${newArgs.league}/${newArgs.seasonYear}/scores/gamedetail/${gameId}_gamedetail.json`, args.fallbackUrl);
       },
       /* ----------  STANDINGS ----------*/
@@ -263,9 +267,9 @@ const api = function (token) {
         return fetchStats(`${newArgs.league}/${newArgs.seasonYear}/league/${newArgs.leagueId}_rolling_schedule.json`, args.fallbackUrl);
       },
       /* ----------  TEAM ROSTER  ----------*/
-      teamRoster(args = {}) {
+      teamRoster(teamName, args = {}) {
         const newArgs = defineOtherArgs(args);
-        return fetchStats(`${newArgs.league}/${newArgs.seasonYear}/teams/${newArgs.teamName}_roster.json`, args.fallbackUrl);
+        return fetchStats(`${newArgs.league}/${newArgs.seasonYear}/teams/${teamName}_roster.json`, args.fallbackUrl);
       },
       /* ----------  TEAM COACH  ----------*/
       teamCoach(args = {}) {

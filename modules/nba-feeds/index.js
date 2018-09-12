@@ -179,6 +179,8 @@ function pathCreator(property, fallback, query) {
 
 // Generate a list of request arguments
 function defineOtherArgs(args) {
+  var gid = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
   var leagues = {
     '00': 'nba',
     10: 'wnba',
@@ -189,6 +191,10 @@ function defineOtherArgs(args) {
   };
   var seasonYear = function seasonYear() {
     if (typeof args.seasonYear === 'undefined') {
+      if (gid !== null) {
+        var yy = gid.substr(3, 2);
+        return '20' + yy;
+      }
       if (typeof Drupal.settings.today.season_year === 'undefined' || seasonYear === null) {
         var d = new Date();
         var y = d.getFullYear();
@@ -297,7 +303,7 @@ var api = function api(token) {
       fullGamePlayByPlay: function fullGamePlayByPlay(gameId, quarter) {
         var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-        var newArgs = defineOtherArgs(args);
+        var newArgs = defineOtherArgs(args, gameId);
         return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/pbp/' + gameId + '_' + quarter + '.json', args.fallbackUrl);
       },
 
@@ -305,7 +311,7 @@ var api = function api(token) {
       abbreviatedPlayByPlay: function abbreviatedPlayByPlay(gameId, quarter) {
         var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-        var newArgs = defineOtherArgs(args);
+        var newArgs = defineOtherArgs(args, gameId);
         return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/pbp/' + gameId + '_' + quarter + '.json', args.fallbackUrl);
       },
 
@@ -313,7 +319,7 @@ var api = function api(token) {
       gameDetail: function gameDetail(gameId) {
         var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-        var newArgs = defineOtherArgs(args);
+        var newArgs = defineOtherArgs(args, gameId);
         return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/scores/gamedetail/' + gameId + '_gamedetail.json', args.fallbackUrl);
       },
 
@@ -398,11 +404,11 @@ var api = function api(token) {
       },
 
       /* ----------  TEAM ROSTER  ----------*/
-      teamRoster: function teamRoster() {
-        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      teamRoster: function teamRoster(teamName) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_roster.json', args.fallbackUrl);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + teamName + '_roster.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM COACH  ----------*/
