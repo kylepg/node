@@ -412,59 +412,59 @@ var api = function api(token) {
       },
 
       /* ----------  TEAM COACH  ----------*/
-      teamCoach: function teamCoach() {
-        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-        var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '_coach.json', args.fallbackUrl);
-      },
-
-      /* ----------  TEAM PLAYER AVERAGES  ----------*/
-      teamPlayerAverages: function teamPlayerAverages() {
-        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-        var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + newArgs.teamName + '/player_averages_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
-      },
-
-      /* ----------  TEAM STATISTICS  ----------*/
-      teamStatistics: function teamStatistics() {
-        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-        var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/teamstats_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
-      },
-
-      /* ----------  TEAM LEADERS OVERALL FILE  ----------*/
-      teamLeadersOverallFile: function teamLeadersOverallFile() {
-        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-        var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/teamstats_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
-      },
-
-      /* ----------  TEAM LEADERS DETAIL STATS  ----------*/
-      teamLeadersDetailStats: function teamLeadersDetailStats(statType) {
+      teamCoach: function teamCoach(teamName) {
         var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/leaders_detail_' + statType + '_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + teamName + '_coach.json', args.fallbackUrl);
+      },
+
+      /* ----------  TEAM PLAYER AVERAGES  ----------*/
+      teamPlayerAverages: function teamPlayerAverages(teamName) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/' + teamName + '/player_averages_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
+      },
+
+      /* ----------  TEAM STATISTICS  ----------*/
+      teamStatistics: function teamStatistics(teamName) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + teamName + '/teamstats_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
+      },
+
+      /* ----------  TEAM LEADERS OVERALL FILE  ----------*/
+      teamLeadersOverallFile: function teamLeadersOverallFile(teamName) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + teamName + '/teamstats_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
+      },
+
+      /* ----------  TEAM LEADERS DETAIL STATS  ----------*/
+      teamLeadersDetailStats: function teamLeadersDetailStats(teamName, statType) {
+        var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+        var newArgs = defineOtherArgs(args);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + teamName + '/leaders_detail_' + statType + '_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  TEAM SEASON AVERAGES  ----------*/
-      teamSeasonAverages: function teamSeasonAverages() {
-        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      teamSeasonAverages: function teamSeasonAverages(teamName) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/season_averages_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + teamName + '/season_averages_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  ADVANCED TEAM AND PLAYER STATS  ----------*/
-      advancedTeamAndPlayerStats: function advancedTeamAndPlayerStats() {
-        var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      advancedTeamAndPlayerStats: function advancedTeamAndPlayerStats(teamName) {
+        var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         var newArgs = defineOtherArgs(args);
-        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + newArgs.teamName + '/advanced_stats_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
+        return fetchStats(newArgs.league + '/' + newArgs.seasonYear + '/teams/statistics/' + teamName + '/advanced_stats_' + newArgs.seasonTypeId + '.json', args.fallbackUrl);
       },
 
       /* ----------  PLAYER CARDS  ----------*/
